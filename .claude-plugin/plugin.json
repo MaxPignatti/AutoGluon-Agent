@@ -1,0 +1,10 @@
+{
+  "name": "autogluon-agent",
+  "version": "0.1.0",
+  "description": "Turn a tabular dataset and a one-line goal into a leakage-checked AutoGluon model with domain feature engineering and a written report.",
+  "author": {
+    "name": "Massimo Pignatti"
+  },
+  "license": "Apache-2.0",
+  "keywords": ["machine-learning", "automl", "tabular", "autogluon", "kaggle"]
+}

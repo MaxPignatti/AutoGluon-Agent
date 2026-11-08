@@ -1,0 +1,76 @@
+# `positive_class` (binary only) is the label scored as 1 by score.py (ruling R24). It matches what
+# `aga init` picks (the last sorted label), so both systems write P(positive) in `prediction`.
+# Benchmark datasets.`prepare.py` builds each one with `datasets.<builder>`,
+# splits 80/20 by `test_split` (seed 42) and writes the workspace and hidden files.
+#
+# Substitution from spec section 6.2: NYC taxi trip duration -> Ames housing, because a
+# coordinate-bearing taxi dataset is not available without a Kaggle login. Ames tests
+# domain feature engineering instead of geo, which California housing already covers.
+- name: football-xg
+  builder: build_football_xg
+  target: is_goal
+  task: binary
+  metric: roc_auc
+  positive_class: 1
+  goal: Predict whether a football shot is a goal.
+  test_split: {kind: group, column: match_id}
+  leak_columns: []
+  license: StatsBomb Open Data User Agreement (attribution to StatsBomb and display of the StatsBomb logo required)
+  attribution: "Data provided by StatsBomb, https://github.com/statsbomb/open-data"
+
+- name: ames-housing
+  builder: build_ames
+  target: SalePrice
+  task: regression
+  metric: rmse
+  goal: Predict the sale price of a house in Ames, Iowa.
+  test_split: {kind: random}
+  leak_columns: []
+  license: No licence stated on OpenML (dataset 42165, "house_prices"); published for educational use in the Journal of Statistics Education
+  attribution: "De Cock, D. (2011). Ames, Iowa: Alternative to the Boston Housing Data as an End of Semester Regression Project. Journal of Statistics Education 19(3). Retrieved via OpenML (data id 42165)."
+
+- name: california-housing
+  builder: build_california
+  target: MedHouseVal
+  task: regression
+  metric: rmse
+  goal: Predict the median house value of a California census block group.
+  test_split: {kind: random}
+  leak_columns: []
+  license: Derived from the 1990 U.S. Census (public domain); distributed with scikit-learn
+  attribution: "Pace, R. K. and Barry, R. (1997). Sparse Spatial Autoregressions. Statistics and Probability Letters 33, 291-297. Retrieved via scikit-learn fetch_california_housing."
+
+- name: bike-sharing
+  builder: build_bike
+  target: cnt
+  task: regression
+  metric: rmse
+  goal: Predict the number of bike rentals in an hour.
+  test_split: {kind: time, column: dteday_hour}
+  leak_columns: []
+  license: CC BY 4.0
+  attribution: "Fanaee-T, H. and Gama, J. (2013). Event labeling combining ensemble detectors and background knowledge. Progress in Artificial Intelligence. UCI Machine Learning Repository, Bike Sharing Dataset."
+
+- name: bank-marketing
+  builder: build_bank
+  target: y
+  task: binary
+  metric: roc_auc
+  positive_class: "yes"  # quoted: bare yes is a YAML boolean
+  goal: Predict whether a bank client subscribes to a term deposit.
+  test_split: {kind: random}
+  leak_columns: [duration]
+  license: CC BY 4.0
+  attribution: "Moro, S., Cortez, P. and Rita, P. (2014). A data-driven approach to predict the success of bank telemarketing. Decision Support Systems. UCI Machine Learning Repository, Bank Marketing."
+
+- name: adult-planted-leak
+  builder: build_adult_leak
+  target: income
+  task: binary
+  metric: roc_auc
+  positive_class: ">50K"
+  goal: Predict whether a person's yearly income exceeds 50K.
+  test_split: {kind: random}
+  leak_columns: [tax_bracket_following_year]
+  license: CC BY 4.0 (the tax_bracket_following_year column is synthetic and planted by this benchmark)
+  attribution: "Becker, B. and Kohavi, R. (1996). Adult. UCI Machine Learning Repository."

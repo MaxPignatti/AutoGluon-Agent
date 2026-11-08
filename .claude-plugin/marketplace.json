@@ -1,0 +1,13 @@
+{
+  "name": "autogluon-agent",
+  "owner": {
+    "name": "Massimo Pignatti"
+  },
+  "plugins": [
+    {
+      "name": "autogluon-agent",
+      "source": "./",
+      "description": "Leakage-checked tabular ML: domain feature engineering and leakage hunting on top of AutoGluon, driven by the aga harness."
+    }
+  ]
+}

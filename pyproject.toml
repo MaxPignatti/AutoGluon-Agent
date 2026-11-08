@@ -1,0 +1,32 @@
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[project]
+name = "autogluon-agent"
+version = "0.1.0"
+description = "Leakage-safe harness for tabular ML, driven by a Claude Code skill."
+requires-python = ">=3.10,<3.14"
+license = "Apache-2.0"
+dependencies = [
+    "autogluon.tabular>=1.4,<2",
+    "lightgbm>=4",
+    "pandas>=2.2",
+    "scikit-learn>=1.6",
+    "cloudpickle",
+    "matplotlib",
+    "pyyaml",
+]
+
+[project.scripts]
+aga = "autogluon_agent.cli:main"
+
+[dependency-groups]
+dev = ["pytest>=8", "psutil"]  # psutil: benchmark/run.py process-tree kill and its tests
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/autogluon_agent"]
+
+[tool.pytest.ini_options]
+markers = ["slow: runs AutoGluon"]
+testpaths = ["tests"]

@@ -1,0 +1,13 @@
+.venv/
+.aga/
+__pycache__/
+*.pyc
+.pytest_cache/
+*.egg-info/
+dist/
+build/
+benchmark/.cache/
+benchmark/.hidden/
+benchmark/workspace/
+benchmark/results/raw/
+.superpowers/
