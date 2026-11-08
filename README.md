@@ -37,11 +37,13 @@ Install the `aga` harness that the plugin drives (needs Python 3.10 to 3.13; uv 
 uv tool install --python 3.13 autogluon-agent
 ```
 
-`autogluon_agent` is not on PyPI yet. Until it is, install from GitHub:
+`autogluon-agent` is not on PyPI yet. Until it is, install from GitHub:
 
 ```
 uv tool install --python 3.13 git+https://github.com/MaxPignatti/AutoGluon-Agent
 ```
+
+The install includes every AutoGluon model family the benchmark used: LightGBM, CatBoost, XGBoost, random forests and the fastai/PyTorch neural networks. It is a large download, mostly PyTorch (on Linux the default PyTorch wheel includes CUDA). To update an existing install, add `--reinstall` to the same command.
 
 If `aga` is missing when you run the skill, it tries to install the harness itself.
 
