@@ -4,6 +4,11 @@ Give Claude Code a CSV and a one-line goal. Get a leakage-checked AutoGluon mode
 
 **Benchmark:** with the same 60-minute budget, AutoGluon-Agent beat AutoGluon `best_quality` on all six test datasets, cutting its error by 2.2% to 9.3%, at about $0.85 of Claude usage per dataset. On the two datasets with a planted leak, AutoGluon's own validation promised 0.95 and 0.98 AUC but delivered 0.80 and 0.93; AutoGluon-Agent dropped the leaky columns and its estimates were within 0.01 of the test score. Single seed, half a desktop CPU per run: see [Benchmark](#benchmark) and the [full write-up](docs/benchmark-60min-halfmachine-2026-11-07-run2/README.md).
 
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/images/error-reduction-dark.png">
+  <img alt="Bar chart: AutoGluon-Agent's relative error reduction vs AutoGluon best_quality per dataset: football-xg +9.3%, bank-marketing +8.9%, california-housing +7.7%, bike-sharing +4.5%, adult-planted-leak +4.1%, ames-housing +2.2%." src="docs/images/error-reduction-light.png">
+</picture>
+
 > [!NOTE]
 > **Time-ordered data:** check the framing. The agent decides between a time split and random rows, and records why in `FRAMING.md`. On the one time-series dataset in the benchmark (bike-sharing) it chose the time split and won both 60-minute runs, with an error estimate that was pessimistic rather than optimistic. An [earlier preview](docs/benchmark-preview-2026-10-30/README.md) showed how a wrong framing makes the estimate far too optimistic, so read `FRAMING.md` before trusting a score on time-ordered data.
 
@@ -84,6 +89,13 @@ The `aga` harness, not the agent, owns splitting, scoring and the holdout, so a 
 AutoGluon-Agent is compared with AutoGluon `best_quality` on raw features, under the same 1-hour wall-clock budget per dataset, on public datasets that include a leakage track. The agent receives only `train.csv`, the target name and a one-line goal, and the test set is kept outside its working directory (not a sandbox: the agent's transcript is saved with every run so access can be checked).
 
 Current results: [run 2, 2026-11-07](docs/benchmark-60min-halfmachine-2026-11-07-run2/README.md), production test set (leaky columns blank, as at prediction time), with every AutoGluon model family installed (LightGBM, CatBoost, XGBoost, random forests, fastai and torch neural nets). Caveat: each system ran on half the machine (3 cores / 6 threads of a Ryzen 5 9600X, 14 GB). [Run 1](docs/benchmark-60min-halfmachine-2026-11-04/README.md), without CatBoost, XGBoost or neural models, gave larger margins (+5.8% to +12.6%); the extra models helped AutoGluon more than AutoGluon-Agent. Relative error reduction is positive when AutoGluon-Agent's error is lower; the CV-vs-test gap is test score minus the system's own validation score.
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/images/promised-vs-delivered-dark.png">
+  <img alt="Dot plot of each system's own validation score vs its test score on the two leakage datasets. bank-marketing: AutoGluon promised 0.951 and delivered 0.799 (-0.15 AUC); AutoGluon-Agent promised 0.807 and delivered 0.817 (+0.010). adult: AutoGluon promised 0.983 and delivered 0.930 (-0.05 AUC); AutoGluon-Agent promised 0.932 and delivered 0.933 (+0.001)." src="docs/images/promised-vs-delivered-light.png">
+</picture>
+
+Charts are generated from the scored results by `benchmark/charts.py`.
 
 <!-- BENCHMARK:START -->
 | Dataset | Task | Metric | AutoGluon (test) | AutoGluon-Agent (test) | Absolute difference | Relative error reduction | CV-vs-test gap (AutoGluon / AutoGluon-Agent) | Wall-clock min (AutoGluon / AutoGluon-Agent) | Claude cost (USD) |
