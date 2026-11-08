@@ -2,15 +2,12 @@
 
 Give Claude Code a CSV and a one-line goal. Get a leakage-checked AutoGluon model, a journal of every experiment, and a report that explains what worked, what failed and why.
 
-> [!WARNING]
-> **Known issue: time-series data is not handled reliably yet.** In the [benchmark preview](docs/benchmark-preview-2026-10-30/README.md) on bike-sharing demand, AutoGluon-Agent either lost by 78% to AutoGluon (10-minute budget, temporal framing) or won by 3.5% only because it wrongly framed the time series as random rows (60-minute budget), which made its own error estimate about 2× too optimistic (29.0 vs a real 65.5).
->
-> There are three causes, and the harness and skill now address each one:
-> 1. In temporal mode the final model never trains on the newest ~32% of the timeline: the holdout plus AutoGluon's tuning tail. **Addressed:** `aga fit` now refits the best model on the tuning tail (`refit_full`), and the new `aga refit` trains the delivered model on all labelled rows, holdout included, after the one-shot evaluation.
-> 2. The skill does not reliably detect that a dataset is time-ordered. **Addressed:** `aga init` prints a hint with the date range of every date column when `--time` was not given, and the skill must decide time versus random rows explicitly and record why.
-> 3. `aga fit` runs longer than about 9 minutes can be killed by Claude Code's shell timeout. **Addressed:** the skill runs any long `aga fit` or `aga refit` in the background, and `aga fit` now defaults to half the remaining budget.
->
-> In both 60-minute re-runs with the fixes ([run 1](docs/benchmark-60min-halfmachine-2026-11-04/README.md), [run 2](docs/benchmark-60min-halfmachine-2026-11-07-run2/README.md)), the agent framed bike-sharing as a time series and beat AutoGluon (by 12.2% and 4.5%), with an error estimate that was pessimistic rather than optimistic (72.2 vs a real 60.4; 84.2 vs a real 62.0). That is one dataset, so still check the framing in `FRAMING.md` and treat estimates on time-ordered data with caution.
+**Benchmark:** with the same 60-minute budget, AutoGluon-Agent beat AutoGluon `best_quality` on all six test datasets, cutting its error by 2.2% to 9.3%, at about $0.85 of Claude usage per dataset. On the two datasets with a planted leak, AutoGluon's own validation promised 0.95 and 0.98 AUC but delivered 0.80 and 0.93; AutoGluon-Agent dropped the leaky columns and its estimates were within 0.01 of the test score. Single seed, half a desktop CPU per run: see [Benchmark](#benchmark) and the [full write-up](docs/benchmark-60min-halfmachine-2026-11-07-run2/README.md).
+
+> [!NOTE]
+> **Time-ordered data:** check the framing. The agent decides between a time split and random rows, and records why in `FRAMING.md`. On the one time-series dataset in the benchmark (bike-sharing) it chose the time split and won both 60-minute runs, with an error estimate that was pessimistic rather than optimistic. An [earlier preview](docs/benchmark-preview-2026-10-30/README.md) showed how a wrong framing makes the estimate far too optimistic, so read `FRAMING.md` before trusting a score on time-ordered data.
+
+AutoGluon-Agent is an independent project built on [AutoGluon](https://github.com/autogluon/autogluon); it is not affiliated with or endorsed by the AutoGluon team.
 
 ## Why
 
